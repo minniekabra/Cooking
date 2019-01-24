@@ -6,14 +6,6 @@ Created on Mon Nov 26 00:16:25 2018
 @author: minnie
 """
 
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Nov 25 21:31:20 2018
-
-@author: minnie
-"""
-
 from sklearn import svm
 import pickle
 import gensim
@@ -85,24 +77,16 @@ print('Data size',len(X), len(Y))
 
 group_cuisine=dict(collections.Counter(cuisine_bal))
 
-balancedcuisine = []
-
-for key, value in group_cuisine.items() :
-    k = []
-    k.append(key)
-    k.append(value)
-    balancedcuisine.append(k)
 
 with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/all/balancedcuisine.csv', 'w',newline='') as csvfile:
     writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
     writer.writerows(balancedcuisine)
-    
-#One V/S One
-'''
+
+#Runningg SVM 
 clf_SVClinear_databal1 = svm.SVC(C = 1, kernel = 'linear', decision_function_shape = 'ovo')
 clf_SVClinear_databal1.fit(X,Y)
 clf_SVClinear_databal1 = pickle.dumps(clf_SVClinear_databal1)
-'''
+
 clf0 = pickle.loads(clf_SVClinear_databal1)
 
 print('SVClinear ovo Model Trained')
@@ -113,7 +97,7 @@ mismatch_matrix = balancedcuisine
 for i in range(0, len(mismatch_matrix)):
     mismatch_matrix[i][1] = 0
     
-
+#Evaluating mismatch
 italian_mismatch = 0 
 mexican_mismatch = 0 
 southern_us_mismatch = 0
@@ -147,7 +131,7 @@ with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/all/mismatch_matrix_databal
     writer.writerow(['cuisine', 'mismatch'])
     writer.writerows(mismatch_matrix)
 
-'''
+
 #Scoring
 with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/all/test.json','r', encoding='utf-8') as f:
     json_dict = json.load(f)
@@ -221,5 +205,3 @@ with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/all/test_kaggle_0.csv', 'w'
     writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
     writer.writerows(list_kaggle)
 
-print('csv done')
-'''
