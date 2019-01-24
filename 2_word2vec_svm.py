@@ -191,6 +191,7 @@ with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/all2/kaggle_submission.csv'
     reader = csv.reader(f)
     list_kaggle = list(reader)
     
+#Kaggle submission format
 for i in range(0,len(list_kaggle)):
     for j in range(0,len(your_list)):
         if list_kaggle[i][0] == your_list[j][0]:
