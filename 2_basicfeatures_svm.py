@@ -5,13 +5,8 @@ Created on Fri Dec  7 22:11:51 2018
 
 @author: minnie
 """
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Thu Dec  6 00:03:28 2018
-
-@author: minnie
+This code constructs simple & intuitive features and then runs Support Vector machine on the data
 """
 
 from sklearn import svm
@@ -29,25 +24,23 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 start = time.clock()
 
-A = np.array([1,2,3,4])
-print(A/10)
-print(statistics.mean(map(float, A)))
-print(statistics.stdev(A))
-
-
+#Extract data from json file
 with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/all/train.json','r', encoding='utf-8') as f:
     json_dict = json.load(f)
 
-cuisine = []
-ingredients_all = []
-ingredients_list = []
 id_list = []
+cuisine = []
+ingredients_list = []
+ingredients_all = []
 
 for data in json_dict:
     id_list.append(data['id'])
     cuisine.append(data['cuisine'])
     ingredients_list.append(data['ingredients'])
     ingredients_all.extend(data['ingredients'])
+
+ '''Features construction: Give each ingredient a weight as per its important in that cuisine... 
+also, it gives inverse weight to those ingredients which are common in every cuisine, eg: Salt, Water'''
 
 groups_cuisine =dict(collections.Counter(cuisine))
 groups_ingredients = dict(collections.Counter(ingredients_all))
@@ -126,7 +119,7 @@ with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/enhance/ingredients_content
     writer.writerow(header)
     writer.writerows(ingredients_percuisine_2)
 
-
+#Training data construction
 ingredients_vector = []
 
 for i in range(0, len(ingredients_list)):
@@ -137,7 +130,6 @@ for i in range(0, len(ingredients_list)):
     for j in range(0, len(ingredients_list[i])):
         xyz = ingredients_list[i][j]
         stats =[]
-    
         
         for l in range(len(cuisine_all_prop)):
             
@@ -150,11 +142,8 @@ for i in range(0, len(ingredients_list)):
             else:
                 k = 0
                 
-            
             stats.append(k)
-        
-        #mean = statistics.mean(map(float, stats))
-        #std = statistics.stdev(map(float, stats))
+      
         
     no_ingr = len(ingredients_list[i])
     initial_list.append(no_ingr)
@@ -166,23 +155,7 @@ for i in range(0, len(ingredients_list)):
         
     
     ingredients_vector.append(initial_list)
-    
-#print(len(ingredients_vector[0]),ingredients_vector[0] )
-
-avg_cuisine_ingredients = []
-
-for i in range(len(cuisine_ingredients)):    
-    comb = [0]*21    
-    for j in range(1, len(cuisine_ingredients[i])):
-        first = comb
-        second = cuisine_ingredients[i][j]
-        comb = list(map(sum, zip(first, second)))
-    
-    
-    comb = np.array(comb)/(len(cuisine_ingredients[i]) - 1)
-    k = [cuisine_ingredients[i][0]]
-    k.extend(list(comb))
-    avg_cuisine_ingredients.append(k)
+ 
     
 X = ingredients_vector
 Y = cuisine
@@ -199,6 +172,8 @@ with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/enhance/avg_cuisine.csv', '
     writer.writerows(avg_cuisine_ingredients)
 
 print('Data length', len(X), len(X[0]), len(Y))
+
+#Running model(Support Vector Machine))
 clf_SVClinear_ub20 = svm.SVC(C = 1, kernel = 'linear', decision_function_shape = 'ovo')
 clf_SVClinear_ub20.fit(X,Y)
 clf_SVClinear_ub20 = pickle.dumps(clf_SVClinear_ub20)
@@ -246,8 +221,7 @@ with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/enhance/train_scoring_ub20.
     writer.writerow(header)
     writer.writerows(matrix)
 
-'''
-'''
+
 #Scoring
 with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/all/test.json','r', encoding='utf-8') as f:
     json_dict = json.load(f)
@@ -258,11 +232,6 @@ id_list=[]
 for data in json_dict:
     id_list.append(data['id'])
     testdata_list.append(data['ingredients'])
-    
-    
-
-#Word2Vec
-model_save = Word2Vec.load('model.bin')
 
 #Construct vectors from the word2vec
 testdata_vector = []
@@ -328,7 +297,7 @@ for i in range(0,len(list_kaggle)):
 with open('/Users/minnie/Desktop/Kaggle/Cooking/Data/all/test_kaggle_20.csv', 'w',newline='') as csvfile:
     writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
     writer.writerows(list_kaggle)
-'''
+
  
 print('Time Taken by process is' , (time.clock() - start))
 
